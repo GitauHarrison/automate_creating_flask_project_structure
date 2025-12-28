@@ -50,16 +50,17 @@ You can choose one of two environments:
 1. **pyenv + Poetry**
 2. **pyenv + pyenv-virtualenv + `requirements.txt`**
 
-The project it generates follows **separation of concerns**:
+The project it generates follows **separation of concerns** using
+blueprints:
 
 - Application configuration in `config.py`.
-- App package in `app/`.
-- Views/routes in `app/routes.py`.
+- App package in `app/` with blueprints:
+  - `app/main/` – public pages and the authenticated dashboard.
+  - `app/auth/` – authentication routes, forms, and related helpers.
+  - `app/admin/` – placeholder for admin-only views.
+  - `app/errors/` – error handlers and error templates.
 - Database models in `app/models.py`.
-- Forms in `app/forms.py`.
-- Email helpers in `app/email.py`.
-- Error handlers in `app/errors.py`.
-- Reusable helpers in `app/utils/`.
+- Cross-cutting helpers in `app/utils/` (e.g. decorators).
 - HTML templates in `app/templates/`.
 - Static assets in `app/static/`.
 
@@ -143,8 +144,11 @@ The script checks for `poetry` before proceeding with the Poetry option.
 - Python version management via `pyenv`.
 - Dependency and virtualenv management via `Poetry`.
 - The helper generates:
-  - `pyproject.toml` with the baseline dependencies.
-  - An empty `poetry.lock` placeholder (you will run `poetry lock`).
+  - `pyproject.toml` with initial project metadata.
+- It does **not** create a `poetry.lock` file; that file will be created by
+  Poetry itself the first time you run `poetry add ...` or `poetry lock`. This
+  avoids the "lock file does not have a metadata entry" error that happens
+  when using a hand-written placeholder.
 - It also appends this alias to your shell rc (`~/.zshrc` or `~/.bashrc`):
 
   ```bash
@@ -239,7 +243,6 @@ flask_project/
   LICENSE
   requirements.txt            # if you chose pyenv + pyenv-virtualenv
   pyproject.toml              # if you chose pyenv + Poetry
-  poetry.lock                 # placeholder, if you chose pyenv + Poetry
   app/
     __init__.py
     routes.py
